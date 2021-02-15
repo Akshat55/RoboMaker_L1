@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+
+
+import rospy
+from geometry_msgs.msg import Twist
+
+class Forward():
+    def __init__(self):
+        self._cmd_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
+
+    def go_forward(self):
+        self.twist = Twist()
+
+        r = rospy.Rate(10)
+        
+        # Continue moving forward until rospy doesn't shut down
+        while not rospy.is_shutdown():
+            
+            # Move forward by 0.15
+            self.twist.linear.x = 0.15
+            self._cmd_pub.publish(self.twist)
+            rospy.loginfo("Rotating robot: %s", self.twist)
+            r.sleep()
+
+
+def main():
+    rospy.init_node('forward')
+    try:
+        forward = Forward()
+        forward.go_forward()
+    except rospy.ROSInterruptException:
+        pass
+
+if __name__ == '__main__':
+    main()
